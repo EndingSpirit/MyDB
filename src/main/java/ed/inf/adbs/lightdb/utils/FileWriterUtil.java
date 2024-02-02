@@ -12,16 +12,9 @@ import java.util.List;
 
 public class FileWriterUtil {
     public static void writeTuplesToFile(List<Tuple> tuples) throws IOException {
-        // 获取项目根目录
-        String rootPath = System.getProperty("user.dir");
-        // 构建完整的文件路径
-        String outputDir = Paths.get(rootPath, Config.getInstance().getOutputFilePath()).toString();
-
-        System.out.println("outputDir: " + outputDir);
+        String outputDir = Config.getInstance().getOutputFilePath();
         File file = new File(outputDir);
-        System.out.println("file: " + file);
         File parentDir = file.getParentFile();
-        System.out.println("parentDir: " + parentDir);
         if (parentDir != null && !parentDir.exists()) {
             parentDir.mkdirs();
         }
