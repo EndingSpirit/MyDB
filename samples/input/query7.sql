@@ -1,1 +1,0 @@
-SELECT DISTINCT R.G FROM Reserves R;
