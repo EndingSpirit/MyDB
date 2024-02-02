@@ -1,0 +1,1 @@
+SELECT SUM(1) FROM Sailors GROUP BY Sailors.B;
