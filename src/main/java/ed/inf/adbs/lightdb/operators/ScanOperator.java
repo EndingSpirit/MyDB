@@ -28,9 +28,11 @@ public class ScanOperator extends Operator {
     public Tuple getNextTuple() {
         try {
             if ((currentLine = reader.readLine()) != null) {
-                // 假设数据文件中的每一行是用逗号分隔的值
-                String[] values = currentLine.split("\n");
-                List<Object> fields = new ArrayList<>(Arrays.asList(values));
+                String[] values = currentLine.split(", ");
+                List<Integer> fields = new ArrayList<>(values.length);
+                for (String value : values) {
+                    fields.add(Integer.parseInt(value));
+                }
                 return new Tuple(fields);
             }
             return null;
@@ -48,5 +50,9 @@ public class ScanOperator extends Operator {
             throw new RuntimeException("Error resetting ScanOperator: " + e.getMessage());
         }
     }
-}
 
+    @Override
+    public void dump() throws IOException {
+        super.dump();
+    }
+}

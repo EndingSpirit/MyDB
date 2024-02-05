@@ -4,17 +4,17 @@ import java.util.List;
 
 public class Tuple {
 
-    private List<Object> fields;
+    private List<Integer> fields;
 
-    public Tuple(List<Object> fields) {
+    public Tuple(List<Integer> fields) {
         this.fields = fields;
     }
 
-    public Object getField(int index) {
+    public Integer getField(int index) {
         return fields.get(index);
     }
 
-    public void setField(int index, Object value) {
+    public void setField(int index, Integer value) {
         fields.set(index, value);
     }
 
@@ -22,6 +22,4 @@ public class Tuple {
     public String toString() {
         return fields.toString();
     }
-
 }
-
