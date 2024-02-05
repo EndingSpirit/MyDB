@@ -1,20 +1,27 @@
 package ed.inf.adbs.lightdb.model;
 
 import java.util.List;
+import java.util.Map;
 
 public class Tuple {
 
-    private List<Object> fields;
+    private List<Integer> fields;
+    private Map<String, Integer> columnToIndex;
 
-    public Tuple(List<Object> fields) {
+    public Tuple(List<Integer> fields, Map<String, Integer> columnToIndex) {
         this.fields = fields;
+        this.columnToIndex = columnToIndex;
     }
 
-    public Object getField(int index) {
-        return fields.get(index);
+    public Integer getField(String columnName) {
+        if (columnToIndex.containsKey(columnName)) {
+            return fields.get(columnToIndex.get(columnName));
+        } else {
+            throw new IllegalArgumentException("Column name does not exist: " + columnName);
+        }
     }
 
-    public void setField(int index, Object value) {
+    public void setField(int index, Integer value) {
         fields.set(index, value);
     }
 
@@ -24,4 +31,3 @@ public class Tuple {
     }
 
 }
-

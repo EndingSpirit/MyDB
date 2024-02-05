@@ -2,9 +2,11 @@ package ed.inf.adbs.lightdb.executor;
 
 import ed.inf.adbs.lightdb.model.Tuple;
 import ed.inf.adbs.lightdb.operators.ScanOperator;
+import ed.inf.adbs.lightdb.operators.SelectOperator;
 import ed.inf.adbs.lightdb.utils.Config;
 import ed.inf.adbs.lightdb.utils.FileWriterUtil;
 import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.Statement;
@@ -21,7 +23,7 @@ public class Executor {
     public Executor() {
     }
 
-    public static void parse() throws Exception {
+    public static void execute() throws Exception {
         try {
             String filename = Config.getInstance().getInputFilePath();
             Statement statement = CCJSqlParserUtil.parse(new FileReader(filename));
@@ -45,8 +47,28 @@ public class Executor {
         if (plainSelect.getWhere() == null) {
             scan(plainSelect);
 
+        } else if (plainSelect.getWhere() != null && plainSelect.getJoins() == null) {
+            selectWhere(plainSelect);
         } else {
-            // 处理其他类型的 SELECT 查询
+            throw new UnsupportedOperationException("Unsupported SQL statement");
+        }
+    }
+
+    private static void selectWhere(PlainSelect plainSelect) {
+        Table table = (Table) plainSelect.getFromItem();
+        String tableName = table.getName();
+        Expression where = plainSelect.getWhere();
+        try {
+            ScanOperator scanOperator = new ScanOperator(tableName);
+            SelectOperator selectOperator = new SelectOperator(scanOperator, where);
+            Tuple tuple;
+            List<Tuple> tuples = new ArrayList<>();
+            while ((tuple = selectOperator.getNextTuple()) != null) {
+                tuples.add(tuple);
+            }
+            FileWriterUtil.writeTuplesToFile(tuples);
+        } catch (IOException e) {
+            System.err.println("Error during select where operation: " + e.getMessage());
         }
     }
     private static void scan(PlainSelect plainSelect){
