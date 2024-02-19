@@ -10,49 +10,26 @@ import static org.junit.Assert.*;
  * Unit tests for LightDB.
  */
 public class LightDBTest {
-
 	@Test
-	public void testMain1() throws Exception {
+	public void testMain() throws Exception {
+		assertTrue(compare("1"));
+		assertTrue(compare("2"));
+		assertTrue(compare("13"));
+		assertTrue(compare("14"));
+	}
+
+	public boolean compare(String num) throws Exception {
 		String databaseDir = "db";
-		String inputFile = "input/query1.sql";
-		String outputFile = "output/query1.csv";
-		String expectedOutputFile = "expected_output/query1.csv";
+		String inputFile = "input/query"+num+".sql";
+		String outputFile = "output/query"+num+".csv";
+		String expectedOutputFile = "expected_output/query"+num+".csv";
 
 		String[] args = new String[]{databaseDir, inputFile, outputFile};
 
 		LightDB.main(args);
 
-		assertTrue(compareFileContent(new File(outputFile), new File(expectedOutputFile)));
+		return compareFileContent(new File(outputFile), new File(expectedOutputFile));
 	}
-
-	@Test
-	public void testWhere1() throws Exception {
-		String databaseDir = "db";
-		String inputFile = "input/query1.1.sql";
-		String outputFile = "output/query1.1.csv";
-		String expectedOutputFile = "expected_output/query1.1.csv";
-
-		String[] args = new String[]{databaseDir, inputFile, outputFile};
-
-		LightDB.main(args);
-
-		assertTrue(compareFileContent(new File(outputFile), new File(expectedOutputFile)));
-	}
-
-	@Test
-	public void testProjection() throws Exception {
-		String databaseDir = "db";
-		String inputFile = "input/query2.sql";
-		String outputFile = "output/query2.csv";
-		String expectedOutputFile = "expected_output/query2.csv";
-
-		String[] args = new String[]{databaseDir, inputFile, outputFile};
-
-		LightDB.main(args);
-
-		assertTrue(compareFileContent(new File(outputFile), new File(expectedOutputFile)));
-	}
-
 	private boolean compareFileContent(File file1, File file2) throws Exception {
 		BufferedReader br1 = null;
 		BufferedReader br2 = null;

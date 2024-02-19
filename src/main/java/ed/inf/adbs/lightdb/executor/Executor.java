@@ -15,6 +15,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+import ed.inf.adbs.lightdb.executor.Planner;
+
 /**
  * The purpose of this class is to execute a query.
  * Include reading statement from the query file
@@ -44,27 +46,9 @@ public class Executor {
 
     private static void handleSelect(Select selectStatement) throws IOException {
         PlainSelect plainSelect = (PlainSelect) selectStatement.getSelectBody();
-        Operator finalOperator = constructQueryPlan(plainSelect);
+        Operator finalOperator = Planner.constructQueryPlan(plainSelect);
 
         finalOperator.dump();
-    }
-
-    // Constructs the operator chain based on the SQL query
-    private static Operator constructQueryPlan(PlainSelect plainSelect) throws IOException {
-        String tableName = plainSelect.getFromItem().toString();
-        Operator queryPlan = new ScanOperator(tableName);
-
-        if (plainSelect.getWhere() != null) {
-            queryPlan = new SelectOperator(queryPlan, plainSelect.getWhere(), tableName);
-        }
-
-        if (plainSelect.getSelectItems() != null) {
-            queryPlan = new ProjectionOperator(queryPlan, plainSelect.getSelectItems(), tableName);
-        }
-
-        // 可以添加更多操作符
-
-        return queryPlan;
     }
 
 }
