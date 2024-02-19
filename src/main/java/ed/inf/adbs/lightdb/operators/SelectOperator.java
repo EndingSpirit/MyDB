@@ -1,29 +1,36 @@
 package ed.inf.adbs.lightdb.operators;
 
-import ed.inf.adbs.lightdb.model.Tuple;
-import ed.inf.adbs.lightdb.utils.Config;
+import ed.inf.adbs.lightdb.utils.SelectExpressionDeParser;
+import ed.inf.adbs.lightdb.utils.Tuple;
 import net.sf.jsqlparser.expression.Expression;
-
+import ed.inf.adbs.lightdb.utils.Catlog;
 import java.io.IOException;
+import java.util.List;
 
 
 public class SelectOperator extends Operator {
 
-    private Operator child; // ScanOperator 作为子操作符
-    private Expression whereCondition; // 选择条件
+    private Operator child; // ScanOperator as child
+    private Expression whereCondition;
     private String tableName;
+    private SelectExpressionDeParser selectExpressionDeParser;
 
     public SelectOperator(Operator child, Expression whereCondition, String tableName) {
         this.child = child;
         this.whereCondition = whereCondition;
         this.tableName = tableName;
+        List<String> schema = Catlog.getInstance().getTableSchema(tableName);
+        this.selectExpressionDeParser = new SelectExpressionDeParser(whereCondition, schema);
     }
 
     @Override
-    public Tuple getNextTuple() throws IOException {
+    public Tuple getNextTuple() {
         Tuple tuple;
-        while ((tuple = child.getNextTuple()) != null) {
-            if (evaluateTuple(tuple, whereCondition)) {
+        while ((tuple = this.child.getNextTuple()) != null) {
+            if (this.selectExpressionDeParser == null) {
+                return tuple;
+            }
+            if (this.selectExpressionDeParser.evaluate(tuple)) {
                 return tuple;
             }
         }
@@ -35,10 +42,5 @@ public class SelectOperator extends Operator {
         child.reset();
     }
 
-    private boolean evaluateTuple(Tuple tuple, Expression expression) {
-        ExpressionEvaluator evaluator = new ExpressionEvaluator(tuple, tableName);
-        expression.accept(evaluator);
-        return evaluator.getResult();
-    }
 }
 

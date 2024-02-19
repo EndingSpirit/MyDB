@@ -3,30 +3,32 @@ package ed.inf.adbs.lightdb.utils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class DatabaseCatalog {
+public class Catlog {
 
-    private static DatabaseCatalog instance = null;
-    private Map<String, Map<String, Integer>> tableSchemas;
+    private static Catlog instance = null;
+    private Map<String, List<String>> tableSchemas;
 
-    private DatabaseCatalog() {
+    private Catlog() {
         tableSchemas = new HashMap<>();
     }
 
-    public static DatabaseCatalog getInstance() {
+    public static Catlog getInstance() {
         if (instance == null) {
-            instance = new DatabaseCatalog();
+            instance = new Catlog();
         }
         return instance;
     }
 
-    public void addTableSchema(String tableName, Map<String, Integer> schema) {
+    public void addTableSchema(String tableName, List<String> schema) {
         tableSchemas.put(tableName, schema);
     }
 
-    public Map<String, Integer> getTableSchema(String tableName) {
+    public List<String> getTableSchema(String tableName) {
         return tableSchemas.getOrDefault(tableName, null);
     }
 
@@ -36,11 +38,11 @@ public class DatabaseCatalog {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(" ");
                 String tableName = parts[0];
-                Map<String, Integer> columns = new HashMap<>();
+                List<String> columns = new ArrayList<>();
                 for (int i = 1; i < parts.length; i++) {
-                    columns.put(parts[i], i - 1); // Subtract 1 to convert to 0-based index
+                    columns.add(parts[i]); // 直接添加列名到列表
                 }
-                tableSchemas.put(tableName, columns);
+                tableSchemas.put(tableName, columns); // 存储表名及其列名的列表
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to load schema from file: " + schemaFilePath, e);

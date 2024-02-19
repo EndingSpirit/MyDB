@@ -1,39 +1,42 @@
 package ed.inf.adbs.lightdb.operators;
 
-import ed.inf.adbs.lightdb.model.Tuple;
+import ed.inf.adbs.lightdb.utils.Tuple;
+import ed.inf.adbs.lightdb.utils.Catlog;
+import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.SelectItem;
-import net.sf.jsqlparser.statement.select.SelectItemVisitorAdapter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectionOperator extends Operator {
 
     private Operator child;
-    private List<Integer> projectionIndexes;
+    private PlainSelect plainSelect;
 
-    public ProjectionOperator(Operator child, List<SelectItem<?>> selectItems) {
+    private List<String> schema;
+
+    public ProjectionOperator(Operator child, List<SelectItem<?>> selectItems,String tableName) {
         this.child = child;
-        this.projectionIndexes = new ArrayList<>();
+        this.plainSelect = plainSelect;
+        this.schema = Catlog.getInstance().getTableSchema(plainSelect.getFromItem().toString());
     }
 
     @Override
-    public Tuple getNextTuple() throws IOException {
-        Tuple tuple = child.getNextTuple();
+    public Tuple getNextTuple(){
+        Tuple tuple = this.child.getNextTuple();
         if (tuple == null) {
             return null;
         }
 
-        List<Integer> projectedFields = new ArrayList<>();
-        for (Integer index : projectionIndexes) {
-            projectedFields.add(tuple.getField(index));
+        if (this.plainSelect.getSelectItems().get(0).toString().equals("*")) {
+            return tuple;
         }
-        return new Tuple(projectedFields);
+
+        return tuple;
     }
 
     @Override
     public void reset() throws IOException {
-        child.reset();
+        this.child.reset();
     }
 }

@@ -1,4 +1,4 @@
-package ed.inf.adbs.lightdb.model;
+package ed.inf.adbs.lightdb.utils;
 
 import java.util.List;
 

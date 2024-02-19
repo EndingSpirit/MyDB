@@ -1,13 +1,12 @@
 package ed.inf.adbs.lightdb.operators;
 
-import ed.inf.adbs.lightdb.model.Tuple;
+import ed.inf.adbs.lightdb.utils.Tuple;
 import ed.inf.adbs.lightdb.utils.Config;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ScanOperator extends Operator {
@@ -51,8 +50,4 @@ public class ScanOperator extends Operator {
         }
     }
 
-    @Override
-    public void dump() throws IOException {
-        super.dump();
-    }
 }

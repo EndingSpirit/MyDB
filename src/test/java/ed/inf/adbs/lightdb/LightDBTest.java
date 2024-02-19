@@ -1,12 +1,8 @@
 package ed.inf.adbs.lightdb;
 
-import ed.inf.adbs.lightdb.operators.*;
-import ed.inf.adbs.lightdb.model.Tuple;
-import ed.inf.adbs.lightdb.utils.DatabaseCatalog;
-import net.sf.jsqlparser.parser.CCJSqlParserUtil;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.Select;
-import org.junit.Before;
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -15,47 +11,60 @@ import static org.junit.Assert.*;
  */
 public class LightDBTest {
 
-    @Before
-	public void setUp() {
-		// 初始化数据库目录路径等测试前的设置
-        // 数据库目录路径
-        String databaseDir = "db";
-		DatabaseCatalog.getInstance().loadSchema(databaseDir + "/schema.txt");
+	@Test
+	public void testMain1() throws Exception {
+		String databaseDir = "db";
+		String inputFile = "input/query1.sql";
+		String outputFile = "output/query1.csv";
+		String expectedOutputFile = "expected_output/query1.csv";
+
+		String[] args = new String[]{databaseDir, inputFile, outputFile};
+
+		LightDB.main(args);
+
+		assertTrue(compareFileContent(new File(outputFile), new File(expectedOutputFile)));
 	}
 
 	@Test
-	public void testScanOperator() throws Exception {
-		ScanOperator scanOperator = new ScanOperator("Boats");
-		Tuple tuple;
-		boolean hasData = false;
-		while ((tuple = scanOperator.getNextTuple()) != null) {
-			hasData = true;
-			// 对tuple进行一些断言测试
-			assertNotNull(tuple);
-			// 更多的断言
-		}
-		assertTrue(hasData); // 确保至少读取到了一些数据
+	public void testWhere1() throws Exception {
+		String databaseDir = "db";
+		String inputFile = "input/query1.1.sql";
+		String outputFile = "output/query1.1.csv";
+		String expectedOutputFile = "expected_output/query1.1.csv";
+
+		String[] args = new String[]{databaseDir, inputFile, outputFile};
+
+		LightDB.main(args);
+
+		assertTrue(compareFileContent(new File(outputFile), new File(expectedOutputFile)));
 	}
 
-	@Test
-	public void testSelectOperator() throws Exception {
-		// 首先创建ScanOperator
-		ScanOperator scanOperator = new ScanOperator("Boats");
-		// 然后创建SelectOperator，这里需要一个where条件表达式
-		String whereCondition = "Boats.D = 104"; // 假设A是列名之一，且我们想要筛选A=5的行
-		Select selectStatement = (Select) CCJSqlParserUtil.parse("SELECT * FROM Boats WHERE " + whereCondition);
-		PlainSelect plainSelect = (PlainSelect) selectStatement.getSelectBody();
-		SelectOperator selectOperator = new SelectOperator(scanOperator, plainSelect.getWhere(),"Boats");
 
-		Tuple tuple;
-		boolean conditionMet = false;
-		while ((tuple = selectOperator.getNextTuple()) != null) {
-			conditionMet = true;
-			// 对tuple进行一些断言测试，例如确保满足where条件
-			assertNotNull(tuple);
-			// 这里可以添加更具体的断言，比如检查tuple的某个字段值是否等于5
+	private boolean compareFileContent(File file1, File file2) throws Exception {
+		BufferedReader br1 = null;
+		BufferedReader br2 = null;
+		try {
+			br1 = new BufferedReader(new FileReader(file1));
+			br2 = new BufferedReader(new FileReader(file2));
+
+			String line1;
+			String line2;
+
+			while ((line1 = br1.readLine()) != null) {
+				line2 = br2.readLine();
+				if (line2 == null || !line1.equals(line2)) {
+					return false;
+				}
+			}
+
+			if (br2.readLine() != null) {
+				return false;
+			}
+
+			return true;
+		} finally {
+			if (br1 != null) br1.close();
+			if (br2 != null) br2.close();
 		}
-		assertTrue(conditionMet); // 确保至少有一行数据满足条件
 	}
-
 }

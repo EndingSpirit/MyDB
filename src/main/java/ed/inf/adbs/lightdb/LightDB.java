@@ -2,7 +2,7 @@ package ed.inf.adbs.lightdb;
 
 import ed.inf.adbs.lightdb.utils.Config;
 import ed.inf.adbs.lightdb.executor.Executor;
-import ed.inf.adbs.lightdb.utils.DatabaseCatalog;
+import ed.inf.adbs.lightdb.utils.Catlog;
 
 /**
  * Lightweight in-memory database system
@@ -24,7 +24,7 @@ public class LightDB {
 		Config.getInstance().setInputFilePath(inputFile);
 		Config.getInstance().setOutputFilePath(outputFile);
 		// Just for demonstration, replace this function call with your logic
-		DatabaseCatalog.getInstance().loadSchema(databaseDir + "/schema.txt");
+		Catlog.getInstance().loadSchema(databaseDir + "/schema.txt");
 		Executor.execute();
 	}
 }

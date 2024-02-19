@@ -1,13 +1,11 @@
 package ed.inf.adbs.lightdb.executor;
 
-import ed.inf.adbs.lightdb.model.Tuple;
 import ed.inf.adbs.lightdb.operators.Operator;
 import ed.inf.adbs.lightdb.operators.ProjectionOperator;
 import ed.inf.adbs.lightdb.operators.ScanOperator;
 import ed.inf.adbs.lightdb.operators.SelectOperator;
 import ed.inf.adbs.lightdb.utils.Config;
-import ed.inf.adbs.lightdb.utils.FileWriterUtil;
-import ed.inf.adbs.lightdb.utils.DatabaseCatalog;
+import ed.inf.adbs.lightdb.utils.Catlog;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
@@ -15,17 +13,25 @@ import net.sf.jsqlparser.statement.select.*;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+/**
+ * The purpose of this class is to execute a query.
+ * Include reading statement from the query file
+ * and constructing the operator chain based on the SQL query
+ */
 public class Executor {
 
+    /**
+     * Execute the query
+     *
+     * @throws Exception
+     */
     public static void execute() throws Exception {
         try {
             String filename = Config.getInstance().getInputFilePath();
             Statement statement = CCJSqlParserUtil.parse(new FileReader(filename));
-
+            System.out.println("Executing query: " + statement);
             if (statement instanceof Select) {
                 handleSelect((Select) statement);
             } else {
@@ -38,36 +44,27 @@ public class Executor {
 
     private static void handleSelect(Select selectStatement) throws IOException {
         PlainSelect plainSelect = (PlainSelect) selectStatement.getSelectBody();
-        Operator finalOperator = constructOperatorChain(plainSelect);
+        Operator finalOperator = constructQueryPlan(plainSelect);
 
-        List<Tuple> tuples = new ArrayList<>();
-        Tuple tuple;
-        while ((tuple = finalOperator.getNextTuple()) != null) {
-            tuples.add(tuple);
-        }
-        FileWriterUtil.writeTuplesToFile(tuples);
+        finalOperator.dump();
     }
 
     // Constructs the operator chain based on the SQL query
-    private static Operator constructOperatorChain(PlainSelect plainSelect) throws IOException {
-        Operator operator = new ScanOperator(plainSelect.getFromItem().toString());
-        Map<String, Integer> schema = DatabaseCatalog.getInstance().getTableSchema(plainSelect.getFromItem().toString());
+    private static Operator constructQueryPlan(PlainSelect plainSelect) throws IOException {
+        String tableName = plainSelect.getFromItem().toString();
+        Operator queryPlan = new ScanOperator(tableName);
 
         if (plainSelect.getWhere() != null) {
-            operator = new SelectOperator(operator, plainSelect.getWhere(), plainSelect.getFromItem().toString());
+            queryPlan = new SelectOperator(queryPlan, plainSelect.getWhere(), tableName);
         }
 
-        List<SelectItem<?>> selectItems = plainSelect.getSelectItems();
-        if (selectItems != null && !selectItems.isEmpty()) {
-            boolean projectAllColumns = selectItems.stream().anyMatch(item -> item.toString().equals("*"));
-            if (!projectAllColumns) {
-                operator = new ProjectionOperator(operator, selectItems); // tableName should be defined based on your context
-            }
-        }
+//        if (plainSelect.getSelectItems() != null) {
+//            ProjectionOperator projectOperator = new ProjectionOperator(queryPlan, plainSelect.getSelectItems(), tableName);
+//        }
 
-        // Add more operators here as needed, e.g., Join, OrderBy, Distinct, GroupBy
+        // 可以添加更多操作符
 
-        return operator;
+        return queryPlan;
     }
 
 }
