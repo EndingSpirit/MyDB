@@ -58,9 +58,9 @@ public class Executor {
             queryPlan = new SelectOperator(queryPlan, plainSelect.getWhere(), tableName);
         }
 
-//        if (plainSelect.getSelectItems() != null) {
-//            ProjectionOperator projectOperator = new ProjectionOperator(queryPlan, plainSelect.getSelectItems(), tableName);
-//        }
+        if (plainSelect.getSelectItems() != null) {
+            queryPlan = new ProjectionOperator(queryPlan, plainSelect.getSelectItems(), tableName);
+        }
 
         // 可以添加更多操作符
 

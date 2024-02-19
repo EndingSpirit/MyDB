@@ -39,6 +39,19 @@ public class LightDBTest {
 		assertTrue(compareFileContent(new File(outputFile), new File(expectedOutputFile)));
 	}
 
+	@Test
+	public void testProjection() throws Exception {
+		String databaseDir = "db";
+		String inputFile = "input/query2.sql";
+		String outputFile = "output/query2.csv";
+		String expectedOutputFile = "expected_output/query2.csv";
+
+		String[] args = new String[]{databaseDir, inputFile, outputFile};
+
+		LightDB.main(args);
+
+		assertTrue(compareFileContent(new File(outputFile), new File(expectedOutputFile)));
+	}
 
 	private boolean compareFileContent(File file1, File file2) throws Exception {
 		BufferedReader br1 = null;
