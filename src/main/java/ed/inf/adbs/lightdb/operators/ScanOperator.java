@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ScanOperator is used to read all data from a table file.
+ */
 public class ScanOperator extends Operator {
 
     private String tableName;
@@ -17,12 +20,20 @@ public class ScanOperator extends Operator {
 
     private String databaseDir = Config.getInstance().getDbPath();
 
+    /**
+     * Constructor for ScanOperator.
+     * @param tableName The name of the table to be scanned.
+     * @throws IOException
+     */
     public ScanOperator(String tableName) throws IOException {
         this.tableName = tableName;
-        // 假设数据文件与表名同名，位于某个固定的目录下
         this.reader = new BufferedReader(new FileReader(databaseDir+"/data/" + tableName + ".csv"));
     }
 
+    /**
+     * Gets the next tuple.
+     * @return Next tuple，if no more tuple return null。
+     */
     @Override
     public Tuple getNextTuple() {
         try {
@@ -40,6 +51,9 @@ public class ScanOperator extends Operator {
         }
     }
 
+    /**
+     * Reset the operator to the beginning of the table.
+     */
     @Override
     public void reset() {
         try {

@@ -14,6 +14,10 @@ public class Tuple {
         return fields.get(index);
     }
 
+    public List<Integer> getFields() {
+        return fields;
+    }
+
     public void setField(int index, Integer value) {
         fields.set(index, value);
     }

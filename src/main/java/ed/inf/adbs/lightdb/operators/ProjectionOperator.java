@@ -52,7 +52,7 @@ public class ProjectionOperator extends Operator {
 
 
     @Override
-    public void reset() throws IOException {
+    public void reset(){
         this.child.reset();
     }
 }

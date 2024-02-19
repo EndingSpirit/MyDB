@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
+/**
+ * Operator is the base class for all operators in the query plan.
+ */
 public abstract class Operator {
 
     /**
@@ -15,8 +18,12 @@ public abstract class Operator {
      */
     public abstract Tuple getNextTuple();
 
-    public abstract void reset() throws IOException;
+    public abstract void reset();
 
+    /**
+     * Dumps the output of the operator to a file.
+     * @throws IOException
+     */
     public void dump() throws IOException {
         String outputFile = Config.getInstance().getOutputFilePath();
         File file = new File(outputFile);

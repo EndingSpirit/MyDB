@@ -9,18 +9,31 @@ import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
 
 import java.util.List;
 
+/**
+ * SelectExpressionDeParser is used to evaluate the where condition
+ */
 public class SelectExpressionDeParser extends ExpressionDeParser {
     private Expression expression;
     private Tuple currentTuple;
     private List<String> schema;
     private Boolean result = null; // Use Boolean to handle null (uninitialized)
 
+    /**
+     * Constructor for SelectExpressionDeParser
+     * @param expression The where condition
+     * @param schema The schema of the table
+     */
     public SelectExpressionDeParser(Expression expression, List<String> schema) {
         super();
         this.schema = schema;
         this.expression = expression;
     }
 
+    /**
+     * Evaluate the where condition for the given tuple
+     * @param tuple The tuple to be evaluated
+     * @return true if the tuple satisfies the where condition, false otherwise
+     */
     public boolean evaluate(Tuple tuple) {
         this.currentTuple = tuple;
         this.result = true; // Default to true, will be updated by expression evaluation
@@ -93,6 +106,12 @@ public class SelectExpressionDeParser extends ExpressionDeParser {
     public void visit(Between between) {
         throw new UnsupportedOperationException("BETWEEN expressions are not supported.");
     }
+
+    @Override
+    public void visit(InExpression inExpression) {
+        throw new UnsupportedOperationException("IN expressions are not supported.");
+    }
+
 
     private Integer getValue(Expression expression) {
         if (expression instanceof Column) {
