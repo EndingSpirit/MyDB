@@ -11,6 +11,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 
+import ed.inf.adbs.lightdb.executor.Planner;
+
 /**
  * The purpose of this class is to execute a query.
  * Include reading statement from the query file
