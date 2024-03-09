@@ -17,6 +17,7 @@ public class LightDBTest {
 		assertTrue(compare("5"));
 		assertTrue(compare("13"));
 		assertTrue(compare("14"));
+		assertTrue(compare("15"));
 	}
 
 	public boolean compare(String num) throws Exception {

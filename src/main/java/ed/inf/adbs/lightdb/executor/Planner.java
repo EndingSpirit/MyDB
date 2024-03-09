@@ -4,10 +4,14 @@ import ed.inf.adbs.lightdb.operators.*;
 import ed.inf.adbs.lightdb.utils.Catlog;
 import ed.inf.adbs.lightdb.utils.JoinExpressionDeParser;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
+import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
+import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,62 +23,63 @@ public class Planner {
     public static Operator constructQueryPlan(PlainSelect plainSelect) throws IOException {
         List<Join> joins = plainSelect.getJoins();
         Expression where = plainSelect.getWhere();
-
-        // Initialize the catalog to get table schema information
         Catlog catalog = Catlog.getInstance();
-
-        // First, handle the main table (FROM clause)
         String tableName = plainSelect.getFromItem().toString();
         Operator queryPlan = new ScanOperator(tableName);
 
-        // If there's a WHERE clause, apply selection conditions
-        if (where != null && (joins == null || joins.isEmpty())) {
-            queryPlan = new SelectOperator(queryPlan, where, tableName);
+        // Extract join and selection conditions from WHERE clause
+        JoinExpressionDeParser joinExpressionDeParser = new JoinExpressionDeParser();
+        if (where != null) {
+            where.accept(joinExpressionDeParser);
         }
 
-        // Now handle the joins
-        if (joins != null && !joins.isEmpty()) {
-            JoinExpressionDeParser joinExpressionDeParser = new JoinExpressionDeParser();
-            where.accept(joinExpressionDeParser);
-            for (Join join : joins) {
-                if (join.getRightItem() == null) {
-                    throw new IllegalArgumentException("Join does not have a right item.");
-                }
+        // Apply selection conditions related to the FROM table before the JOINs
+        for (Expression expr : joinExpressionDeParser.getSelectionConditions()) {
+            queryPlan = new SelectOperator(queryPlan, expr, tableName);
+        }
 
+
+        // Handle the joins
+        if (joins != null && !joins.isEmpty()) {
+            for (Join join : joins) {
                 String rightTableName = join.getRightItem().toString();
                 Operator rightTableScan = new ScanOperator(rightTableName);
-
-                // Prepare the schema for both tables in the join
                 List<String> leftSchema = catalog.getTableSchema(tableName);
                 List<String> rightSchema = catalog.getTableSchema(rightTableName);
 
-                // Get the ON expressions for this join
-                List<Expression> onExpressions = (List<Expression>) join.getOnExpressions();
+                Expression joinCondition = combineJoinConditions((List<Expression>) join.getOnExpressions(), joinExpressionDeParser.getJoinConditions());
 
-                // You can have multiple ON expressions for a single JOIN
-                // For the sake of this example, we only take the first one
-                Expression onExpression = !onExpressions.isEmpty() ? onExpressions.get(0) :
-                        joinExpressionDeParser.getJoinConditions().isEmpty() ? null :
-                                joinExpressionDeParser.getJoinConditions().get(0);
+                // Create the JoinOperator
+                queryPlan = new JoinOperator(queryPlan, rightTableScan, joinCondition, leftSchema, rightSchema);
 
-                queryPlan = new JoinOperator(queryPlan, rightTableScan, onExpression, leftSchema, rightSchema);
-
-                // Update the tableName to be the result of the join for subsequent joins
-                // Implement your logic to handle table names or aliases here
+                // For subsequent joins, consider the combined schema
+                tableName = ""; // Placeholder for combined table name/alias
             }
-            for (Expression selectionCondition : joinExpressionDeParser.getSelectionConditions()) {
-                queryPlan = new SelectOperator(queryPlan, selectionCondition, tableName);
-            }
-        } else if (where != null) {
-            // 如果没有JOIN，只应用选择条件
-            queryPlan = new SelectOperator(queryPlan, where, tableName);
         }
 
-        // Finally, if there's a projection, apply it
+        // Finally, apply projection
         if (plainSelect.getSelectItems() != null) {
             queryPlan = new ProjectionOperator(queryPlan, plainSelect.getSelectItems(), tableName);
         }
 
         return queryPlan;
     }
+
+    private static Expression combineJoinConditions(List<Expression> onExpressions, List<Expression> joinConditions) {
+        // If there are explicit ON expressions in the JOIN, they take precedence
+        if (onExpressions != null && !onExpressions.isEmpty()) {
+            return onExpressions.get(0); // Assuming only one ON expression for simplicity
+        }
+        // Otherwise, we use join conditions extracted from WHERE clause
+        if (joinConditions != null && !joinConditions.isEmpty()) {
+            // Assuming all join conditions are combined with AND
+            Expression combined = joinConditions.get(0);
+            for (int i = 1; i < joinConditions.size(); i++) {
+                combined = new AndExpression(combined, joinConditions.get(i));
+            }
+            return combined;
+        }
+        return null; // If no join conditions, it's a cross product
+    }
 }
+

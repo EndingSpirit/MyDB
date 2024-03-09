@@ -23,6 +23,7 @@ public class JoinOperator extends Operator {
 
         // Assuming the SelectExpressionDeParser can handle tuples with combined schema
         this.expressionDeParser = new SelectExpressionDeParser(joinCondition, combineSchemas(leftSchema, rightSchema));
+        this.currentLeftTuple = this.leftChild.getNextTuple();
     }
 
     @Override
