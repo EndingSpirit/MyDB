@@ -1,0 +1,1 @@
+SELECT DISTINCT b1.D, b1.E, b2.D FROM Boats b1, Boats b2, Reserves r WHERE b1.E = b2.F AND r.H = b1.D;

@@ -1,0 +1,1 @@
+SELECT R.G, B1.D, B2.E FROM Reserves R, Sailors S, Boats B1, Boats B2;

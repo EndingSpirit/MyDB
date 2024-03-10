@@ -1,0 +1,1 @@
+SELECT R.H, R.G, B.D FROM Reserves R, Boats B, Sailors S WHERE B.D = R.H and S.A = B.F ORDER BY R.H;

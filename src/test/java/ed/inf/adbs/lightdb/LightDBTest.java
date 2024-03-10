@@ -18,6 +18,13 @@ public class LightDBTest {
 		assertTrue(compare("13"));
 		assertTrue(compare("14"));
 		assertTrue(compare("15"));
+		assertTrue(compare("16"));
+		assertTrue(compare("17"));
+		assertTrue(compare("18"));
+		assertTrue(compare("19"));
+		assertTrue(compare("20"));
+		assertTrue(compare("21"));
+		assertTrue(compare("22"));
 	}
 
 	public boolean compare(String num) throws Exception {

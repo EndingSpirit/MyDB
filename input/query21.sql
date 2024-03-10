@@ -1,0 +1,1 @@
+SELECT * FROM Boats, Reserves, Sailors WHERE Boats.D = Reserves.H AND Reserves.G = Sailors.A AND Reserves.H = 102 AND Boats.E = Sailors.A;

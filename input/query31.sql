@@ -1,0 +1,1 @@
+SELECT * FROM Reserves, Sailors, Boats WHERE Reserves.G >= 1 AND Reserves.G <= 3 AND Sailors.B = 200 AND Boats.D = Reserves.H AND Sailors.A = Reserves.G ORDER BY Boats.F;

@@ -1,0 +1,1 @@
+SELECT * FROM Boats b1, Boats b2, Reserves r WHERE b1.E = b2.F AND r.H = b1.D ORDER BY b2.E;

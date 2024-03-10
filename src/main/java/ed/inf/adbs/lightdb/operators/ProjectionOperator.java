@@ -15,13 +15,11 @@ public class ProjectionOperator extends Operator {
 
     private final List<SelectItem<?>> selectItems;
     private Operator child;
-    private PlainSelect plainSelect;
 
     private List<String> schema;
 
     public ProjectionOperator(Operator child, List<SelectItem<?>> selectItems,String tableName) {
         this.child = child;
-        this.plainSelect = plainSelect;
         this.schema = Catlog.getInstance().getTableSchema(tableName);
         this.selectItems = selectItems;
     }

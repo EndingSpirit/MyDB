@@ -1,0 +1,1 @@
+SELECT DISTINCT B.D, S.C from Boats B, Reserves R, Sailors S;

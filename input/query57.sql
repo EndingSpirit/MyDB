@@ -1,0 +1,1 @@
+SELECT * FROM Reserves R, Sailors S WHERE S.A = R.G;

@@ -19,7 +19,9 @@ public class SelectOperator extends Operator {
     public SelectOperator(Operator child, Expression whereCondition, String tableName) {
         this.child = child;
         List<String> schema = Catlog.getInstance().getTableSchema(tableName);
+        if (whereCondition != null) {
         this.selectExpressionDeParser = new SelectExpressionDeParser(whereCondition, schema);
+        }
     }
 
     /**

@@ -1,0 +1,1 @@
+SELECT DISTINCT S.A, S.B FROM Sailors S, Reserves R, Boats B where S.A = R.G and S.A < 4 and S.A >= B.F and B.E <= 2;
