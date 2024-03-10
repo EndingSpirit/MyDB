@@ -11,8 +11,6 @@ import java.io.FileReader;
 import java.io.IOException;
 
 
-import ed.inf.adbs.lightdb.executor.Planner;
-
 /**
  * The purpose of this class is to execute a query.
  * Include reading statement from the query file
@@ -22,7 +20,6 @@ public class Executor {
 
     /**
      * Execute the query
-     *  @throws Exception
      */
     public static void execute() throws Exception {
         try {
@@ -40,7 +37,7 @@ public class Executor {
     }
 
     private static void handleSelect(Select selectStatement) throws IOException {
-        PlainSelect plainSelect = (PlainSelect) selectStatement.getSelectBody();
+        PlainSelect plainSelect = selectStatement.getPlainSelect();
         Operator finalOperator = Planner.constructQueryPlan(plainSelect);
 
         finalOperator.dump();

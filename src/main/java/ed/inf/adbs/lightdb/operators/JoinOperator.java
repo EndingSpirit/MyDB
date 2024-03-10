@@ -9,12 +9,12 @@ import java.util.List;
 
 public class JoinOperator extends Operator {
 
-    private Operator leftChild;
-    private Operator rightChild;
-    private Expression joinCondition;
-    private SelectExpressionDeParser expressionDeParser;
-    private Tuple currentLeftTuple = null;  // Keep track of the current left tuple
-    private Tuple currentRightTuple = null; // Keep track of the current right tuple
+    private final Operator leftChild;
+    private final Operator rightChild;
+    private final Expression joinCondition;
+    private final SelectExpressionDeParser expressionDeParser;
+    private Tuple currentLeftTuple;  // Keep track of the current left tuple
+    private Tuple currentRightTuple; // Keep track of the current right tuple
 
     public JoinOperator(Operator leftChild, Operator rightChild, Expression joinCondition, List<String> combinedSchema) {
         this.leftChild = leftChild;

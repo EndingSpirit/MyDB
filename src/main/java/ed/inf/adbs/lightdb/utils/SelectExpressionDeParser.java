@@ -13,9 +13,9 @@ import java.util.List;
  * SelectExpressionDeParser is used to evaluate the where condition
  */
 public class SelectExpressionDeParser extends ExpressionDeParser {
-    private Expression expression;
+    private final Expression expression;
     private Tuple currentTuple;
-    private List<String> schema;
+    private final List<String> schema;
     private Boolean result = null; // Use Boolean to handle null (uninitialized)
 
     /**

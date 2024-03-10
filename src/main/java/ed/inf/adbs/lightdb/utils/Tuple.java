@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Tuple {
 
-    private List<Integer> fields;
+    private final List<Integer> fields;
 
     public Tuple(List<Integer> fields) {
         this.fields = fields;
@@ -16,10 +16,6 @@ public class Tuple {
 
     public List<Integer> getFields() {
         return fields;
-    }
-
-    public void setField(int index, Integer value) {
-        fields.set(index, value);
     }
 
     @Override

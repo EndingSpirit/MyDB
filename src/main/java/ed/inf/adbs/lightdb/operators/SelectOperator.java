@@ -3,8 +3,8 @@ package ed.inf.adbs.lightdb.operators;
 import ed.inf.adbs.lightdb.utils.SelectExpressionDeParser;
 import ed.inf.adbs.lightdb.utils.Tuple;
 import net.sf.jsqlparser.expression.Expression;
-import ed.inf.adbs.lightdb.utils.Catlog;
-import java.io.IOException;
+import ed.inf.adbs.lightdb.utils.Catalog;
+
 import java.util.List;
 
 /**
@@ -12,13 +12,13 @@ import java.util.List;
  */
 public class SelectOperator extends Operator {
 
-    private Operator child; // ScanOperator as child
+    private final Operator child; // ScanOperator as child
     private SelectExpressionDeParser selectExpressionDeParser;
 
 
     public SelectOperator(Operator child, Expression whereCondition, String tableName) {
         this.child = child;
-        List<String> schema = Catlog.getInstance().getTableSchema(tableName);
+        List<String> schema = Catalog.getInstance().getTableSchema(tableName);
         if (whereCondition != null) {
         this.selectExpressionDeParser = new SelectExpressionDeParser(whereCondition, schema);
         }

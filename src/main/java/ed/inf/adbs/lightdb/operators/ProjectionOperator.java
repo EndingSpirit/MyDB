@@ -1,26 +1,24 @@
 package ed.inf.adbs.lightdb.operators;
 
 import ed.inf.adbs.lightdb.utils.Tuple;
-import ed.inf.adbs.lightdb.utils.Catlog;
+import ed.inf.adbs.lightdb.utils.Catalog;
 import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.schema.Column;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectionOperator extends Operator {
 
     private final List<SelectItem<?>> selectItems;
-    private Operator child;
+    private final Operator child;
 
-    private List<String> schema;
+    private final List<String> schema;
 
     public ProjectionOperator(Operator child, List<SelectItem<?>> selectItems,String tableName) {
         this.child = child;
-        this.schema = Catlog.getInstance().getTableSchema(tableName);
+        this.schema = Catalog.getInstance().getTableSchema(tableName);
         this.selectItems = selectItems;
     }
 

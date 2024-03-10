@@ -1,4 +1,12 @@
-
+*.sql
+*.log
+*.jar
+*.class
+*.iml
+*.ipr
+*.iws
+*.properties
+*.csv
 expected_output/*
 .idea/*
 target/*
