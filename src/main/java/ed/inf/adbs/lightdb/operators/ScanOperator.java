@@ -14,16 +14,14 @@ import java.util.List;
  */
 public class ScanOperator extends Operator {
 
-    private String tableName;
+    private final String tableName;
     private BufferedReader reader;
-    private String currentLine;
 
-    private String databaseDir = Config.getInstance().getDbPath();
+    private final String databaseDir = Config.getInstance().getDbPath();
 
     /**
      * Constructor for ScanOperator.
      * @param tableName The name of the table to be scanned.
-     * @throws IOException
      */
     public ScanOperator(String tableName) throws IOException {
         this.tableName = tableName;
@@ -37,6 +35,7 @@ public class ScanOperator extends Operator {
     @Override
     public Tuple getNextTuple() {
         try {
+            String currentLine;
             if ((currentLine = reader.readLine()) != null) {
                 String[] values = currentLine.split(", ");
                 List<Integer> fields = new ArrayList<>(values.length);

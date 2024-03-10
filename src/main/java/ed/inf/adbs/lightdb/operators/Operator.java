@@ -22,7 +22,6 @@ public abstract class Operator {
 
     /**
      * Dumps the output of the operator to a file.
-     * @throws IOException
      */
     public void dump() throws IOException {
         String outputFile = Config.getInstance().getOutputFilePath();
@@ -35,12 +34,12 @@ public abstract class Operator {
             file.createNewFile();
         }
         PrintStream printStream = new PrintStream(outputFile);
-        Tuple line = null;
+        Tuple line;
         while ((line = this.getNextTuple()) != null){
             String lineStr = line.toString();
             if (lineStr.length() > 1) { // remove brackets
                 String lineWithoutBrackets = lineStr.substring(1, lineStr.length() - 1);
-                printStream.append(lineWithoutBrackets + "\n");
+                printStream.append(lineWithoutBrackets).append("\n");
                 System.out.println(lineWithoutBrackets);
             }
         }
