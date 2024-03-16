@@ -1,5 +1,6 @@
 package ed.inf.adbs.lightdb.operators;
 
+import ed.inf.adbs.lightdb.utils.Catalog;
 import ed.inf.adbs.lightdb.utils.Tuple;
 import ed.inf.adbs.lightdb.utils.Config;
 
@@ -24,8 +25,9 @@ public class ScanOperator extends Operator {
      * @param tableName The name of the table to be scanned.
      */
     public ScanOperator(String tableName) throws IOException {
-        this.tableName = tableName;
-        this.reader = new BufferedReader(new FileReader(databaseDir+"/data/" + tableName + ".csv"));
+        this.tableName = Catalog.getInstance().resolveTableName(tableName.trim());
+        String databaseDir = Config.getInstance().getDbPath();
+        this.reader = new BufferedReader(new FileReader(databaseDir + "/data/" + this.tableName + ".csv"));
     }
 
     /**

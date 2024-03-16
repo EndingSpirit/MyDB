@@ -14,7 +14,10 @@ public class LightDBTest {
 	public void testMain() throws Exception {
 		assertTrue(compare("1"));
 		assertTrue(compare("2"));
+		assertTrue(compare("3"));
+		assertTrue(compare("4"));
 		assertTrue(compare("5"));
+		assertTrue(compare("6"));
 		assertTrue(compare("13"));
 		assertTrue(compare("14"));
 		assertTrue(compare("15"));
@@ -40,30 +43,19 @@ public class LightDBTest {
 		return compareFileContent(new File(outputFile), new File(expectedOutputFile));
 	}
 	private boolean compareFileContent(File file1, File file2) throws Exception {
-		BufferedReader br1 = null;
-		BufferedReader br2 = null;
-		try {
-			br1 = new BufferedReader(new FileReader(file1));
-			br2 = new BufferedReader(new FileReader(file2));
+        try (BufferedReader br1 = new BufferedReader(new FileReader(file1)); BufferedReader br2 = new BufferedReader(new FileReader(file2))) {
 
-			String line1;
-			String line2;
+            String line1;
+            String line2;
 
-			while ((line1 = br1.readLine()) != null) {
-				line2 = br2.readLine();
-				if (line2 == null || !line1.equals(line2)) {
-					return false;
-				}
-			}
+            while ((line1 = br1.readLine()) != null) {
+                line2 = br2.readLine();
+                if (!line1.equals(line2)) {
+                    return false;
+                }
+            }
 
-			if (br2.readLine() != null) {
-				return false;
-			}
-
-			return true;
-		} finally {
-			if (br1 != null) br1.close();
-			if (br2 != null) br2.close();
-		}
+            return br2.readLine() == null;
+        }
 	}
 }

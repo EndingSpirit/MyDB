@@ -1,6 +1,7 @@
 package ed.inf.adbs.lightdb.executor;
 
 import ed.inf.adbs.lightdb.operators.Operator;
+import ed.inf.adbs.lightdb.utils.Catalog;
 import ed.inf.adbs.lightdb.utils.Config;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
@@ -38,8 +39,8 @@ public class Executor {
 
     private static void handleSelect(Select selectStatement) throws IOException {
         PlainSelect plainSelect = selectStatement.getPlainSelect();
-        Operator finalOperator = Planner.constructQueryPlan(plainSelect);
 
+        Operator finalOperator = Planner.constructQueryPlan(plainSelect);
         finalOperator.dump();
     }
 

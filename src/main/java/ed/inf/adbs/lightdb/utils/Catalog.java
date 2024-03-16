@@ -9,6 +9,9 @@ public class Catalog {
 
     private static Catalog instance = null;
     private final Map<String, List<String>> tableSchemas;
+    // This map is for alias -> actual table name resolution
+    private final Map<String, String> aliasesToTableNames = new HashMap<>();
+
 
     private Catalog() {
         tableSchemas = new HashMap<>();
@@ -22,7 +25,9 @@ public class Catalog {
     }
 
     public List<String> getTableSchema(String tableName) {
-        return tableSchemas.getOrDefault(tableName, null);
+        // Resolve alias before getting the schema
+        String actualTableName = resolveTableName(tableName);
+        return tableSchemas.get(actualTableName);
     }
 
     public void loadSchema(String schemaFilePath) {
@@ -37,5 +42,32 @@ public class Catalog {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load schema from file: " + schemaFilePath, e);
         }
+    }
+
+    public String resolveTableName(String name) {
+        String resolved = aliasesToTableNames.get(name);
+        if (resolved != null) {
+            return resolved;
+        }
+
+        String[] parts = name.split("\\s+");
+        if (parts.length > 1) {
+            resolved = aliasesToTableNames.get(parts[parts.length - 1]);
+            if (resolved != null) {
+                return resolved;
+            }
+        }
+
+        return name;
+    }
+
+
+    public void setTableAlias(String alias, String tableName) {
+        // The problem seems to be here; ensure tableName is correctly parsed
+        aliasesToTableNames.put(alias, tableName.trim()); // Trimming to remove any leading/trailing spaces
+    }
+
+    public void addTableSchema(String tableName, List<String> columns) {
+        tableSchemas.put(tableName, columns);
     }
 }

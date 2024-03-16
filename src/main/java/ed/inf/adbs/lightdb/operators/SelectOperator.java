@@ -18,9 +18,10 @@ public class SelectOperator extends Operator {
 
     public SelectOperator(Operator child, Expression whereCondition, String tableName) {
         this.child = child;
-        List<String> schema = Catalog.getInstance().getTableSchema(tableName);
+        String resolvedTableName = Catalog.getInstance().resolveTableName(tableName);
+        List<String> schema = Catalog.getInstance().getTableSchema(resolvedTableName);
         if (whereCondition != null) {
-        this.selectExpressionDeParser = new SelectExpressionDeParser(whereCondition, schema);
+            this.selectExpressionDeParser = new SelectExpressionDeParser(whereCondition, schema);
         }
     }
 

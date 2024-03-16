@@ -18,7 +18,8 @@ public class ProjectionOperator extends Operator {
 
     public ProjectionOperator(Operator child, List<SelectItem<?>> selectItems,String tableName) {
         this.child = child;
-        this.schema = Catalog.getInstance().getTableSchema(tableName);
+        String resolvedTableName = Catalog.getInstance().resolveTableName(tableName);
+        this.schema = Catalog.getInstance().getTableSchema(resolvedTableName);
         this.selectItems = selectItems;
     }
 
