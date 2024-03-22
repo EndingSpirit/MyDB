@@ -1,5 +1,6 @@
 package ed.inf.adbs.lightdb.operators;
 
+import ed.inf.adbs.lightdb.utils.Config;
 import ed.inf.adbs.lightdb.utils.SelectExpressionDeParser;
 import ed.inf.adbs.lightdb.utils.Tuple;
 import net.sf.jsqlparser.expression.Expression;
@@ -16,13 +17,10 @@ public class SelectOperator extends Operator {
     private SelectExpressionDeParser selectExpressionDeParser;
 
 
-    public SelectOperator(Operator child, Expression whereCondition, String tableName) {
+    public SelectOperator(Operator child, Expression whereCondition, String tableName,List<String> schema) {
         this.child = child;
-        String resolvedTableName = Catalog.getInstance().resolveTableName(tableName);
-        List<String> schema = Catalog.getInstance().getTableSchema(resolvedTableName);
-        if (whereCondition != null) {
-            this.selectExpressionDeParser = new SelectExpressionDeParser(whereCondition, schema);
-        }
+        // 用传入的schema代替内部解析
+        this.selectExpressionDeParser = whereCondition != null ? new SelectExpressionDeParser(whereCondition, schema) : null;
     }
 
     /**

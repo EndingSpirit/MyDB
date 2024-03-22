@@ -6,6 +6,8 @@ public class Config {
     private String outputFilePath;
     private String inputFilePath;
 
+    private Boolean useAlias = false;
+
     private Config() {
     }
 
@@ -26,6 +28,14 @@ public class Config {
 
     public String getInputFilePath() {
         return inputFilePath;
+    }
+
+    public Boolean isUseAliases() {
+        return useAlias;
+    }
+
+    public void setUseAliases(Boolean useAlias) {
+        this.useAlias = useAlias;
     }
 
     public void setOutputFilePath(String outputFilePath) {

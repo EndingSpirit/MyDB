@@ -14,6 +14,7 @@ public class JoinExpressionDeParser extends ExpressionDeParser {
     private final List<Expression> selectionConditions = new ArrayList<>();
 
 
+
     public static Boolean isJoin(String left, String right) {
         String leftTable = left.contains(".") ? left.split("\\.")[0] : null;
         String rightTable = right.contains(".") ? right.split("\\.")[0] : null;

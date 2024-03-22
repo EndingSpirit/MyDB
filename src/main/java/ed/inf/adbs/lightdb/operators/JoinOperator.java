@@ -37,7 +37,6 @@ public class JoinOperator extends Operator {
                 return null;
             }
         }
-
         do {
             // 尝试与右子操作符的每个元组进行匹配
             while (currentRightTuple != null) {

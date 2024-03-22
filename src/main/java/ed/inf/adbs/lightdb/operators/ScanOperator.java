@@ -25,7 +25,7 @@ public class ScanOperator extends Operator {
      * @param tableName The name of the table to be scanned.
      */
     public ScanOperator(String tableName) throws IOException {
-        this.tableName = Catalog.getInstance().resolveTableName(tableName.trim());
+        this.tableName = Catalog.getInstance().resolveTableName(tableName.split(" ")[0]);
         String databaseDir = Config.getInstance().getDbPath();
         this.reader = new BufferedReader(new FileReader(databaseDir + "/data/" + this.tableName + ".csv"));
     }
