@@ -65,8 +65,8 @@ public class Planner {
         }
 
         // Apply projection if needed
-        queryPlan = new ProjectionOperator(queryPlan, plainSelect);
-
+        ProjectionOperator projectionOperator = new ProjectionOperator(queryPlan, plainSelect);
+        queryPlan = new SortOperator(plainSelect, projectionOperator);
         return queryPlan;
     }
 
