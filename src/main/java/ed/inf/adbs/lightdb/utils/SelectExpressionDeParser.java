@@ -59,10 +59,10 @@ public class SelectExpressionDeParser extends ExpressionDeParser {
     }
 
     @Override
-    public void visit(MinorThan minorThanEquals) {
-        super.visit(minorThanEquals);
-        Integer leftValue = getValue(minorThanEquals.getLeftExpression(), schema, currentTuple);
-        Integer rightValue = getValue(minorThanEquals.getRightExpression(), schema, currentTuple);
+    public void visit(MinorThan minorThan) {
+        super.visit(minorThan);
+        Integer leftValue = getValue(minorThan.getLeftExpression(), schema, currentTuple);
+        Integer rightValue = getValue(minorThan.getRightExpression(), schema, currentTuple);
         result = leftValue != null && rightValue != null && leftValue < rightValue;
     }
 

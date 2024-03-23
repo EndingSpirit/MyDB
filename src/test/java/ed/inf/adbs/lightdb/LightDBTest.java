@@ -40,11 +40,11 @@ public class LightDBTest {
 		assertTrue(compare("6"));
 	}
 
-//	@Test
-//	public void testMain7() throws Exception {
-//		assertTrue(compare("7"));
-//	}
-//
+	@Test
+	public void testMain7() throws Exception {
+		assertTrue(compare("7"));
+	}
+
 	@Test
 	public void testMain8() throws Exception {
 		assertTrue(compare("8"));
@@ -174,6 +174,171 @@ public class LightDBTest {
 	public void testMain36() throws Exception {
 		assertTrue(compare("36"));
 	}
+
+	@Test
+	public void testMain37() throws Exception {
+		assertTrue(compare("37"));
+	}
+
+	@Test
+	public void testMain38() throws Exception {
+		assertTrue(compare("38"));
+	}
+
+	@Test
+	public void testMain39() throws Exception {
+		assertTrue(compare("39"));
+	}
+
+	@Test
+	public void testMain40() throws Exception {
+		assertTrue(compare("40"));
+	}
+
+	@Test
+	public void testMain41() throws Exception {
+		assertTrue(compare("41"));
+	}
+
+	@Test
+	public void testMain42() throws Exception {
+		assertTrue(compare("42"));
+	}
+
+	@Test
+	public void testMain43() throws Exception {
+		assertTrue(compare("43"));
+	}
+
+	@Test
+	public void testMain44() throws Exception {
+		assertTrue(compare("44"));
+	}
+
+	@Test
+	public void testMain45() throws Exception {
+		assertTrue(compare("45"));
+	}
+
+	@Test
+	public void testMain46() throws Exception {
+		assertTrue(compare("46"));
+	}
+	@Test
+	public void testMain47() throws Exception {
+		assertTrue(compare("47"));
+	}
+
+	@Test
+	public void testMain48() throws Exception {
+		assertTrue(compare("48"));
+	}
+	@Test
+	public void testMain49() throws Exception {
+		assertTrue(compare("49"));
+	}
+	@Test
+	public void testMain50() throws Exception {
+		assertTrue(compare("50"));
+	}
+	@Test
+	public void testMain51() throws Exception {
+		assertTrue(compare("51"));
+	}
+	@Test
+	public void testMain52() throws Exception {
+		assertTrue(compare("52"));
+	}
+	@Test
+	public void testMain53() throws Exception {
+		assertTrue(compare("53"));
+	}
+	@Test
+	public void testMain54() throws Exception {
+		assertTrue(compare("54"));
+	}
+	@Test
+	public void testMain55() throws Exception {
+		assertTrue(compare("55"));
+	}
+	@Test
+	public void testMain56() throws Exception {
+		assertTrue(compare("56"));
+	}
+
+	@Test
+	public void testMain57() throws Exception {
+		assertTrue(compare("57"));
+	}
+
+	@Test
+	public void testMain58() throws Exception {
+		assertTrue(compare("58"));
+	}
+
+	@Test
+	public void testMain59() throws Exception {
+		assertTrue(compare("59"));
+	}
+
+	@Test
+	public void testMain60() throws Exception {
+		assertTrue(compare("60"));
+	}
+
+	@Test
+	public void testMain61() throws Exception {
+		assertTrue(compare("61"));
+	}
+
+	@Test
+	public void testMain62() throws Exception {
+		assertTrue(compare("62"));
+	}
+
+	@Test
+	public void testMain63() throws Exception {
+		assertTrue(compare("63"));
+	}
+
+
+	@Test
+	public void testMain64() throws Exception {
+		assertTrue(compare("64"));
+	}
+
+	@Test
+	public void testMain65() throws Exception {
+		assertTrue(compare("65"));
+	}
+
+	@Test
+	public void testMain66() throws Exception {
+		assertTrue(compare("66"));
+	}
+	@Test
+	public void testMain67() throws Exception {
+		assertTrue(compare("67"));
+	}
+
+	@Test
+	public void testMain68() throws Exception {
+		assertTrue(compare("68"));
+	}
+	@Test
+	public void testMain69() throws Exception {
+		assertTrue(compare("69"));
+	}
+
+
+
+
+
+
+
+
+
+
 
 
 

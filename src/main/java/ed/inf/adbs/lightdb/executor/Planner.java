@@ -66,7 +66,9 @@ public class Planner {
 
         // Apply projection if needed
         ProjectionOperator projectionOperator = new ProjectionOperator(queryPlan, plainSelect);
-        queryPlan = new SortOperator(plainSelect, projectionOperator);
+        SortOperator sortOperator = new SortOperator(plainSelect, projectionOperator);
+
+        queryPlan = new DuplicateEliminationOperator(plainSelect, sortOperator);
         return queryPlan;
     }
 
@@ -107,22 +109,22 @@ public class Planner {
                     schema.replaceAll(s -> alias + "." + s);
                 }
             }
-
             List<Expression> selectionConditions = new ArrayList<>();
             for (Expression expression : joinExpressionDeParser.getSelectionConditions()) {
                 List<String> l = SQLExpressionUtils.extractTableNamesFromExpression(expression);
-                String expressionTableName = catalog.getTableNameByAlias(l.get(0));
-                if (Config.getInstance().isUseAliases()) {
-                    if (l.isEmpty() && i == 0) {
+
+                // 对于没有表名的表达式，如1=1，应用于第一个表
+                if (l.isEmpty() && i == 0) {
+                    selectionConditions.add(expression);
+                    continue;
+                }
+                // 对于包含表名的表达式
+                for (String tableNameOrAlias : l) {
+                    // 确保表达式仅应用于与之相关的表
+                    if ((Config.getInstance().isUseAliases() && tableNameOrAlias.equals(table.split(" ")[1])) ||
+                            (!Config.getInstance().isUseAliases() && table.equals(tableNameOrAlias))) {
                         selectionConditions.add(expression);
-                    } else if (resolvedTableName.equals(expressionTableName)) {
-                        selectionConditions.add(expression);
-                    }
-                }else {
-                    if (l.isEmpty() && i == 0) {
-                        selectionConditions.add(expression);
-                    } else if (table.equals(l.get(0))) {
-                        selectionConditions.add(expression);
+                        break; // 假设一个表达式不会同时针对多个表，一旦匹配成功，即可退出循环
                     }
                 }
             }
