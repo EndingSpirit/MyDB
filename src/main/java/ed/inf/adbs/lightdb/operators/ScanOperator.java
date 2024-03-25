@@ -17,7 +17,6 @@ public class ScanOperator extends Operator {
 
     private final String tableName;
     private BufferedReader reader;
-
     private final String databaseDir = Config.getInstance().getDbPath();
 
     /**

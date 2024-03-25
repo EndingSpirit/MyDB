@@ -5,21 +5,33 @@ import net.sf.jsqlparser.expression.operators.arithmetic.*;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
 
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * FunctionExpressionDeParser is used to evaluate the expression in the function
+ */
 public class FunctionExpressionDeParser extends ExpressionDeParser {
     private final List<String> schema;
     private Tuple currentTuple;
     private final Expression expression;
     private Integer result;
 
+    /**
+     * Constructor
+     * @param expression the expression to be evaluated
+     * @param schema the schema of the table
+     */
     public FunctionExpressionDeParser(Expression expression, List<String> schema) {
         super();
         this.schema = schema;
         this.expression = expression;
     }
 
+    /**
+     * Evaluate the expression in the function
+     * @param tuple the tuple to be evaluated
+     * @return the result of the expression
+     */
     public Integer evaluate(Tuple tuple) {
         this.currentTuple = tuple;
         this.result = null; // Default to true, will be updated by expression evaluation

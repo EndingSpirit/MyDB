@@ -17,14 +17,20 @@ public class LightDB {
 			return;
 		}
 
+		// Load the database directory, input file and output file
 		String databaseDir = args[0];
 		String inputFile = args[1];
 		String outputFile = args[2];
+
+		// Set the database directory, input file and output file
 		Config.getInstance().setDbPath(databaseDir);
 		Config.getInstance().setInputFilePath(inputFile);
 		Config.getInstance().setOutputFilePath(outputFile);
-		// Just for demonstration, replace this function call with your logic
+
+		// Load the schema
 		Catalog.getInstance().loadSchema(databaseDir + "/schema.txt");
+
+		// Execute the query
 		Executor.execute();
 	}
 }

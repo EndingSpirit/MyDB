@@ -2,7 +2,6 @@ package ed.inf.adbs.lightdb.utils;
 
 import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
-import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.*;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
@@ -100,6 +99,13 @@ public class SelectExpressionDeParser extends ExpressionDeParser {
     }
 
 
+    /**
+     * Get the value of the expression
+     * @param expression The expression to be evaluated
+     * @param schema The schema of the table
+     * @param currentTuple The tuple to be evaluated
+     * @return The value of the expression
+     */
     private Integer getValue(Expression expression, List<String> schema, Tuple currentTuple) {
         if (expression instanceof Column) {
             String fullColumnName = ((Column) expression).getFullyQualifiedName();
@@ -115,13 +121,11 @@ public class SelectExpressionDeParser extends ExpressionDeParser {
                     }
                 }
                 if (possibleIndexes.size() == 1) {
-                    // 如果只找到一个匹配项，无论是否使用别名，都可以安全返回该列的值
+                    // If only one match is found, it is safe to return the value of that column, whether an alias is used
                     return currentTuple.getField(possibleIndexes.get(0));
                 } else if (possibleIndexes.isEmpty()) {
-                    // 没有找到匹配项
                     return null;
                 } else {
-                    // 找到多个匹配项，这表示查询设计可能有歧义
                     throw new RuntimeException("Ambiguous column name without alias: " + columnName);
                 }
             }

@@ -6,11 +6,19 @@ import net.sf.jsqlparser.statement.select.PlainSelect;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * DuplicateEliminationOperator is used to eliminate duplicate tuples
+ */
 public class DuplicateEliminationOperator extends Operator {
     private final PlainSelect plainSelect;
     private final Operator child;
     private final Set<Integer> seenHashes = new HashSet<>();
 
+    /**
+     * Constructor for DuplicateEliminationOperator
+     * @param plainSelect The select clause
+     * @param child The child operator
+     */
     public DuplicateEliminationOperator(PlainSelect plainSelect, Operator child) {
         this.plainSelect = plainSelect;
         this.child = child;
@@ -18,25 +26,24 @@ public class DuplicateEliminationOperator extends Operator {
 
     @Override
     public Tuple getNextTuple() {
-        // 如果查询中没有使用 DISTINCT 关键字，则直接返回子操作符的下一个元组
         if (plainSelect.getDistinct() == null) {
             return child.getNextTuple();
         }
 
         Tuple current;
         while ((current = child.getNextTuple()) != null) {
-            // 计算当前元组的哈希值
+            // Calculates the hash value of the current tuple
             int currentHash = current.hashCode();
-            // 检查是否已经见过这个哈希值
+            // Check if you've seen the hash before
             if (!seenHashes.contains(currentHash)) {
-                // 如果这是一个新的哈希值，说明这是一个唯一的元组
+                // If this is a new hash, it is a unique tuple
                 seenHashes.add(currentHash);
                 return current;
             }
-            // 如果已经见过，继续循环，处理下一个元组
+            // If you've already seen it, continue the loop and work on the next tuple
         }
 
-        return null; // 没有更多元组
+        return null;
     }
 
     @Override

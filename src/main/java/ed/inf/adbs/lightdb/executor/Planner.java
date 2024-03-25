@@ -17,7 +17,6 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * The purpose of this class is to construct the query plan.
@@ -32,6 +31,7 @@ public class Planner {
      * @throws IOException If an IO error occurs.
      */
     public static Operator constructQueryPlan(PlainSelect plainSelect) throws IOException {
+        // Get the joins, where condition, and all other relevant variables
         List<Join> joins = plainSelect.getJoins();
         Expression where = plainSelect.getWhere();
         Catalog catalog = Catalog.getInstance();
@@ -41,18 +41,23 @@ public class Planner {
         Config config = Config.getInstance();
         config.setUseAliases(useAliases);
 
+        // Set the table alias if it exists
         if (plainSelect.getFromItem().getAlias() != null) {
             String alias = plainSelect.getFromItem().getAlias().getName();
             catalog.setTableAlias(alias, plainSelect.getFromItem().toString().split(" ")[0]);
         }
 
+        // Process joins if they exist, otherwise process single table
         if (joins != null && !joins.isEmpty()) {
+            // Create a JoinExpressionDeParser to extract join conditions
             JoinExpressionDeParser joinExpressionDeParser = new JoinExpressionDeParser();
             if (where != null) {
                 where.accept(joinExpressionDeParser);
             }
             List<String> joinedTableNames = new ArrayList<>();
             joinedTableNames.add(tableName);
+
+            // Process each join, resolve table names, and create the join operator
             for (Join join : joins) {
                 if (join.getRightItem().getAlias() != null) {
                     String joinAlias = join.getRightItem().getAlias().getName();
@@ -69,7 +74,7 @@ public class Planner {
             queryPlan = processSingleTable(tableName, where, catalog);
         }
 
-
+        // Apply SUM and GROUP BY if needed
         List<Column> groupByAttributes = new ArrayList<>();
         GroupByElement groupBy = plainSelect.getGroupBy();
         if (groupBy != null) {
@@ -85,7 +90,7 @@ public class Planner {
         List<Expression> sumExpressions = new ArrayList<>();
         for (SelectItem<?> item : plainSelect.getSelectItems()) {
             Expression expr = item.getExpression();
-            // 检查表达式是否为Function类型且为SUM
+            // Check whether the expression is of type Function and SUM
             if (expr instanceof Function) {
                 Function func = (Function) expr;
                 if ("SUM".equalsIgnoreCase(func.getName())) {
@@ -94,35 +99,35 @@ public class Planner {
             }
         }
 
+        // Apply SUM and GROUP BY if needed
         if (!sumExpressions.isEmpty() || !groupByAttributes.isEmpty()) {
             queryPlan = new SumOperator(queryPlan, sumExpressions, groupByAttributes, plainSelect);
         }
 
-        // Apply projection if needed
+        // Apply projection
         queryPlan = new ProjectionOperator(queryPlan, plainSelect);
+
+        // Apply ORDER BY
         queryPlan = new SortOperator(plainSelect, queryPlan);
 
+        // Apply DISTINCT
         queryPlan = new DuplicateEliminationOperator(plainSelect, queryPlan);
 
+        // Return the final operator of the query plan
         return queryPlan;
     }
 
     public static Operator processSingleTable(String tableName, Expression where, Catalog catalog) throws IOException {
 
         List<String> schema = catalog.getTableSchema(tableName);
-        if (Config.getInstance().isUseAliases()) {
-            String alias = tableName.contains(" ") ? tableName.split(" ")[1] : null;
-            if (alias != null && !schema.get(0).contains(".")) {
-                schema.replaceAll(s -> alias + "." + s);
-            }
-        }
+        Catalog.resolveAliasSchema(tableName, schema);
         catalog.setAccumulatedSchema(tableName, new ArrayList<>(schema));
         // Now create the ScanOperator with the resolved table name
         ScanOperator scanOperator = new ScanOperator(tableName);
 
         // Proceed to apply selections, if any
         if (where != null) {
-            return new SelectOperator(scanOperator, where, tableName,schema); // Ensure SelectOperator also uses the resolved name
+            return new SelectOperator(scanOperator, where,schema); // Ensure SelectOperator also uses the resolved name
         } else {
             return scanOperator;
         }
@@ -138,12 +143,7 @@ public class Planner {
             String resolvedTableName = catalog.resolveTableName(table.split(" ")[0]);
             List<String> schema = new ArrayList<>(catalog.getTableSchema(resolvedTableName));
 
-            if (Config.getInstance().isUseAliases()) {
-                String alias = table.contains(" ") ? table.split(" ")[1] : null;
-                if (alias != null && !schema.get(0).contains(".")) {
-                    schema.replaceAll(s -> alias + "." + s);
-                }
-            }
+            Catalog.resolveAliasSchema(table, schema);
             List<Expression> selectionConditions = new ArrayList<>();
             for (Expression expression : joinExpressionDeParser.getSelectionConditions()) {
                 List<String> l = SQLExpressionUtils.extractTableNamesFromExpression(expression);
@@ -165,7 +165,7 @@ public class Planner {
             }
 
             Expression combinedCondition = SQLExpressionUtils.combineConditionsWithAnd(selectionConditions);
-            SelectOperator selectOperator = new SelectOperator(new ScanOperator(resolvedTableName), combinedCondition, resolvedTableName, schema);
+            SelectOperator selectOperator = new SelectOperator(new ScanOperator(resolvedTableName), combinedCondition, schema);
 
             if (i == 0) {
                 previousOperator = selectOperator;
@@ -190,5 +190,7 @@ public class Planner {
 
         return previousOperator;
     }
+
+
 
 }

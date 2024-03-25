@@ -1,5 +1,8 @@
 package ed.inf.adbs.lightdb.utils;
 
+/**
+ * Config class is used to store the configuration of the database
+ */
 public class Config {
     private static Config instance;
     private String dbPath;
@@ -11,6 +14,10 @@ public class Config {
     private Config() {
     }
 
+    /**
+     * Get the instance of the Config class
+     * @return the instance of the Config class
+     */
     public static Config getInstance() {
         if (instance == null) {
             instance = new Config();

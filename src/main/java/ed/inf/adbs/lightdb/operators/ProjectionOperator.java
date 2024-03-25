@@ -10,9 +10,11 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.schema.Column;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
+/**
+ * ProjectionOperator is used to project the columns in the select clause
+ */
 public class ProjectionOperator extends Operator {
 
     private final List<SelectItem<?>> selectItems;
@@ -20,15 +22,19 @@ public class ProjectionOperator extends Operator {
 
     private final List<String> schema;
 
+    /**
+     * Constructor for ProjectionOperator
+     * @param child The child operator
+     * @param plainSelect The select clause
+     */
     public ProjectionOperator(Operator child, PlainSelect plainSelect) {
         this.child = child;
         List<SelectItem<?>> selectItems = plainSelect.getSelectItems();
         if (child instanceof SumOperator) {
-            // 如果ProjectionOperator的child是SumOperator，那么我们需要将SumOperator的schema传递给ProjectionOperator
-            // 这样ProjectionOperator就可以知道SumOperator的输出schema
+            // If the ProjectionOperator's child is a SumOperator, we need to pass the schema of the SumOperator to the ProjectionOperator
             this.schema = ((SumOperator) child).groupBySchema;
         } else {
-            // 如果ProjectionOperator的child不是SumOperator，那么我们需要从Catalog中获取schema
+            // If the ProjectionOperator's child is not SumOperator, then we need to get the schema from the Catalog
             this.schema = Catalog.getInstance().getSchemasFromPlain(plainSelect);
         }
 
@@ -51,19 +57,12 @@ public class ProjectionOperator extends Operator {
             Expression expression = item.getExpression();
             if (expression instanceof Column) {
                 Column column = (Column) expression;
-                String columnName;
-                if (Config.getInstance().isUseAliases()) {
-                    // 如果使用了别名，就用包含别名的完整列名
-                    columnName = column.getFullyQualifiedName();
-                } else {
-                    // 如果没有使用别名，只用列名
-                    columnName = column.getColumnName();
-                }
+                // Get the column name and handle the case when aliases are used
+                String columnName = Config.getInstance().isUseAliases() ? column.getFullyQualifiedName() : column.getColumnName();
                 int index = schema.indexOf(columnName);
                 if (index != -1) {
                     newFields.add(tuple.getField(index));
                 } else {
-                    // 如果列名在schema中找不到，那么我们应该抛出一个异常或者返回一个错误
                     throw new RuntimeException("Column not found in schema: " + columnName);
                 }
             } else if (expression instanceof Function){
@@ -75,15 +74,11 @@ public class ProjectionOperator extends Operator {
                     throw new RuntimeException("Unsupported function: " + functionName);
                 }
             } else {
-                // 如果选择项不是一个列或者函数，我们应该抛出一个异常或者返回一个错误
                 throw new RuntimeException("Unsupported select item: " + expression);
             }
         }
-
         return new Tuple(newFields);
     }
-
-
 
     @Override
     public void reset(){

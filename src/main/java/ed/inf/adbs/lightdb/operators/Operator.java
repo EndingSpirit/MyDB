@@ -40,7 +40,7 @@ public abstract class Operator {
             if (lineStr.length() > 1) { // remove brackets
                 String lineWithoutBrackets = lineStr.substring(1, lineStr.length() - 1);
                 printStream.append(lineWithoutBrackets).append("\n");
-                System.out.println(lineWithoutBrackets);
+                //System.out.println(lineWithoutBrackets);
             }
         }
     }

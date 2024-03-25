@@ -13,6 +13,10 @@ import net.sf.jsqlparser.statement.select.PlainSelect;
 import ed.inf.adbs.lightdb.utils.Tuple;
 import net.sf.jsqlparser.statement.select.SelectItem;
 
+/**
+ * SumOperator is used to calculate the sum of the columns in the select clause
+ * and group by the columns in the group by clause
+ */
 public class SumOperator extends Operator {
     private final Operator child;
     private final List<Expression> sumExpressions;
@@ -24,6 +28,13 @@ public class SumOperator extends Operator {
     private boolean hasProcessed = false;
     private int currentIndex = 0;
 
+    /**
+     * Constructor for SumOperator
+     * @param child The child operator
+     * @param sumExpressions The sum expressions
+     * @param groupByAttributes The group by attributes
+     * @param plainSelect The select clause
+     */
     public SumOperator(Operator child, List<Expression> sumExpressions, List<Column> groupByAttributes, PlainSelect plainSelect) {
         this.child = child;
         this.sumExpressions = sumExpressions;
@@ -44,18 +55,21 @@ public class SumOperator extends Operator {
         return null;
     }
 
+    /**
+     * Process all the tuples from the child operator
+     */
     private void processAllTuples() {
         Map<String, List<Tuple>> groups = new HashMap<>();
         List<String> schema = Catalog.getInstance().getSchemasFromPlain(plainSelect);
         Tuple tuple;
 
-        // Step 1: 分组收集元组
+        // Group collects tuples with the same group key
         while ((tuple = child.getNextTuple()) != null) {
             String key = buildGroupByKey(tuple, schema);
             groups.computeIfAbsent(key, k -> new ArrayList<>()).add(tuple);
         }
 
-        // Step 2: 对每个分组进行SUM计算
+        // Calculate SUM for each group
         for (Map.Entry<String, List<Tuple>> entry : groups.entrySet()) {
             String groupKey = entry.getKey();
             List<Tuple> tuplesInGroup = entry.getValue();
@@ -65,7 +79,7 @@ public class SumOperator extends Operator {
                 calculate(t, sumResults, schema);
             }
 
-            // 将分组键和SUM结果转换为一个新的Tuple
+            // Converts the group key and SUM result to a new Tuple
             List<Integer> resultFields = new ArrayList<>();
             if (!groupKey.isEmpty()) {
                 for (String keyValue : groupKey.split(",")) {
@@ -75,6 +89,8 @@ public class SumOperator extends Operator {
             resultFields.addAll(Arrays.asList(sumResults));
             resultTuples.add(new Tuple(resultFields));
         }
+
+        // Add the group by schema to the schema
         for (SelectItem<?> item : plainSelect.getSelectItems()) {
             Expression expression = item.getExpression();
 
@@ -96,6 +112,12 @@ public class SumOperator extends Operator {
 
     }
 
+    /**
+     * Calculate the sum of the expression
+     * @param tuple The tuple to be evaluated
+     * @param sumResults The sum results
+     * @param schema The schema of the table
+     */
     private void calculate(Tuple tuple, Integer[] sumResults, List<String> schema) {
         for (int i = 0; i < sumExpressions.size(); i++) {
             Function sumFunction = (Function) sumExpressions.get(i);
@@ -115,6 +137,12 @@ public class SumOperator extends Operator {
     }
 
 
+    /**
+     * Build the group key by the group by attributes
+     * @param tuple The tuple to be evaluated
+     * @param schema The schema of the table
+     * @return The group key
+     */
     private String buildGroupByKey(Tuple tuple, List<String> schema) {
         if (groupByAttributes.isEmpty()) {
             return "";

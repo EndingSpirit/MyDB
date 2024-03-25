@@ -1,7 +1,6 @@
 package ed.inf.adbs.lightdb.executor;
 
 import ed.inf.adbs.lightdb.operators.Operator;
-import ed.inf.adbs.lightdb.utils.Catalog;
 import ed.inf.adbs.lightdb.utils.Config;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
@@ -26,7 +25,9 @@ public class Executor {
         try {
             String filename = Config.getInstance().getInputFilePath();
             Statement statement = CCJSqlParserUtil.parse(new FileReader(filename));
-            System.out.println("Executing query: " + statement);
+            // System.out.println("Executing query: " + statement);
+
+            // Identify the type of the statement and execute planner
             if (statement instanceof Select) {
                 handleSelect((Select) statement);
             } else {
@@ -40,7 +41,10 @@ public class Executor {
     private static void handleSelect(Select selectStatement) throws IOException {
         PlainSelect plainSelect = selectStatement.getPlainSelect();
 
+        // Construct the query plan
         Operator finalOperator = Planner.constructQueryPlan(plainSelect);
+
+        // execute the query and output the result
         finalOperator.dump();
     }
 
