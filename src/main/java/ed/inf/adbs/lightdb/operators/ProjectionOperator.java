@@ -49,16 +49,7 @@ public class ProjectionOperator extends Operator {
         List<Integer> newFields = new ArrayList<>();
         for (SelectItem<?> item : this.selectItems) {
             Expression expression = item.getExpression();
-            if (expression instanceof Function){
-                Function function = (Function) expression;
-                String functionName = function.getName();
-                if (functionName.equals("SUM")) {
-                    newFields.add(tuple.getField(tuple.getFields().size() - 1));
-                } else {
-                    throw new RuntimeException("Unsupported function: " + functionName);
-                }
-            }
-            else if (expression instanceof Column) {
+            if (expression instanceof Column) {
                 Column column = (Column) expression;
                 String columnName;
                 if (Config.getInstance().isUseAliases()) {
@@ -74,6 +65,14 @@ public class ProjectionOperator extends Operator {
                 } else {
                     // 如果列名在schema中找不到，那么我们应该抛出一个异常或者返回一个错误
                     throw new RuntimeException("Column not found in schema: " + columnName);
+                }
+            } else if (expression instanceof Function){
+                Function function = (Function) expression;
+                String functionName = function.getName();
+                if (functionName.equals("SUM")) {
+                    newFields.add(tuple.getField(tuple.getFields().size() - 1));
+                } else {
+                    throw new RuntimeException("Unsupported function: " + functionName);
                 }
             } else {
                 // 如果选择项不是一个列或者函数，我们应该抛出一个异常或者返回一个错误

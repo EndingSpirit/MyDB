@@ -49,27 +49,27 @@ public class LightDBTest {
 	public void testMain8() throws Exception {
 		assertTrue(compare("8"));
 	}
-//
-//	@Test
-//	public void testMain9() throws Exception {
-//		assertTrue(compare("9"));
-//	}
-//
-//	@Test
-//	public void testMain10() throws Exception {
-//		assertTrue(compare("10"));
-//	}
-//
-//	@Test
-//	public void testMain11() throws Exception {
-//		assertTrue(compare("11"));
-//	}
-//
-//	@Test
-//	public void testMain12() throws Exception {
-//		assertTrue(compare("12"));
-//	}
-//
+
+	@Test
+	public void testMain9() throws Exception {
+		assertTrue(compare("9"));
+	}
+
+	@Test
+	public void testMain10() throws Exception {
+		assertTrue(compare("10"));
+	}
+
+	@Test
+	public void testMain11() throws Exception {
+		assertTrue(compare("11"));
+	}
+
+	@Test
+	public void testMain12() throws Exception {
+		assertTrue(compare("12"));
+	}
+
 	@Test
 	public void testMain13() throws Exception {
 		assertTrue(compare("13"));

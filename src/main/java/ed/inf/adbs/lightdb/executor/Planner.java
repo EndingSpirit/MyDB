@@ -98,10 +98,10 @@ public class Planner {
         }
 
         // Apply projection if needed
-        ProjectionOperator projectionOperator = new ProjectionOperator(queryPlan, plainSelect);
-        SortOperator sortOperator = new SortOperator(plainSelect, projectionOperator);
+        queryPlan = new ProjectionOperator(queryPlan, plainSelect);
+        queryPlan = new SortOperator(plainSelect, queryPlan);
 
-        queryPlan = new DuplicateEliminationOperator(plainSelect, sortOperator);
+        queryPlan = new DuplicateEliminationOperator(plainSelect, queryPlan);
 
         return queryPlan;
     }
