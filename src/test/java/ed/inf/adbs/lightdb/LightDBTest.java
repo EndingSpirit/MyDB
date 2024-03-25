@@ -151,6 +151,21 @@ public class LightDBTest {
 	}
 
 	@Test
+	public void testMain29() throws Exception {
+		assertTrue(compare("29"));
+	}
+
+	@Test
+	public void testMain30() throws Exception {
+		assertTrue(compare("30"));
+	}
+
+	@Test
+	public void testMain31() throws Exception {
+		assertTrue(compare("31"));
+	}
+
+	@Test
 	public void testMain32() throws Exception {
 		assertTrue(compare("32"));
 	}
@@ -328,6 +343,21 @@ public class LightDBTest {
 	@Test
 	public void testMain69() throws Exception {
 		assertTrue(compare("69"));
+	}
+
+	@Test
+	public void testMain70() throws Exception {
+		assertTrue(compare("70"));
+	}
+
+	@Test
+	public void testMain71() throws Exception {
+		assertTrue(compare("71"));
+	}
+
+	@Test
+	public void testMain72() throws Exception {
+		assertTrue(compare("72"));
 	}
 
 

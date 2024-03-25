@@ -81,7 +81,13 @@ public class FunctionExpressionDeParser extends ExpressionDeParser {
 
     @Override
     public void visit(Column column) {
-        String columnName = column.getColumnName();
+        String columnName;
+        if (Config.getInstance().isUseAliases()) {
+            columnName= column.getFullyQualifiedName();
+        } else {
+            // If not using aliases, use column name only
+            columnName = column.getColumnName();
+        }
         int columnIndex = schema.indexOf(columnName);
         if (columnIndex != -1) {
             this.result = currentTuple.getField(columnIndex);

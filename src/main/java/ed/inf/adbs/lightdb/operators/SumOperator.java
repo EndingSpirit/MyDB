@@ -3,6 +3,7 @@ package ed.inf.adbs.lightdb.operators;
 import java.util.*;
 
 import ed.inf.adbs.lightdb.utils.Catalog;
+import ed.inf.adbs.lightdb.utils.Config;
 import ed.inf.adbs.lightdb.utils.FunctionExpressionDeParser;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Function;
@@ -15,7 +16,7 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 public class SumOperator extends Operator {
     private final Operator child;
     private final List<Expression> sumExpressions;
-    private final List<String> groupByAttributes;
+    private final List<Column> groupByAttributes;
     private final PlainSelect plainSelect;
     private final List<Tuple> resultTuples = new ArrayList<>();
 
@@ -23,7 +24,7 @@ public class SumOperator extends Operator {
     private boolean hasProcessed = false;
     private int currentIndex = 0;
 
-    public SumOperator(Operator child, List<Expression> sumExpressions, List<String> groupByAttributes, PlainSelect plainSelect) {
+    public SumOperator(Operator child, List<Expression> sumExpressions, List<Column> groupByAttributes, PlainSelect plainSelect) {
         this.child = child;
         this.sumExpressions = sumExpressions;
         this.groupByAttributes = groupByAttributes;
@@ -76,13 +77,18 @@ public class SumOperator extends Operator {
         }
         for (SelectItem<?> item : plainSelect.getSelectItems()) {
             Expression expression = item.getExpression();
-            String alias = item.getAlias() != null ? item.getAlias().getName() : null;
+
             if (expression instanceof Column) {
-                String columnName = ((Column) expression).getColumnName();
-                groupBySchema.add(alias != null ? alias : columnName);
+                if (Config.getInstance().isUseAliases()) {
+                    String columnName = ((Column) expression).getFullyQualifiedName();
+                    groupBySchema.add(columnName);
+                } else {
+                    String columnName = ((Column) expression).getColumnName();
+                    groupBySchema.add(columnName);
+                }
             } else if (expression instanceof Function) {
                 String functionName = expression.toString();
-                groupBySchema.add(alias != null ? alias : functionName);
+                groupBySchema.add(functionName);
             } else {
                 groupBySchema.add(expression.toString());
             }
@@ -114,8 +120,14 @@ public class SumOperator extends Operator {
             return "";
         }
         StringBuilder keyBuilder = new StringBuilder();
-        for (String attr : groupByAttributes) {
-            int index = schema.indexOf(attr);
+        for (Column attr : groupByAttributes) {
+            String ColumnName;
+            if (Config.getInstance().isUseAliases()) {
+                ColumnName = attr.getFullyQualifiedName();
+            } else {
+                ColumnName = attr.getColumnName();
+            }
+            int index = schema.indexOf(ColumnName);
             if (index != -1) {
                 if (keyBuilder.length() > 0) keyBuilder.append(",");
                 keyBuilder.append(tuple.getField(index));

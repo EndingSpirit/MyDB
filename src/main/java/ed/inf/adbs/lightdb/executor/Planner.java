@@ -7,6 +7,7 @@ import ed.inf.adbs.lightdb.utils.JoinExpressionDeParser;
 import ed.inf.adbs.lightdb.utils.SQLExpressionUtils;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Function;
+import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.GroupByElement;
 import net.sf.jsqlparser.statement.select.Join;
@@ -69,14 +70,14 @@ public class Planner {
         }
 
 
-        List<String> groupByAttributes = new ArrayList<>();
+        List<Column> groupByAttributes = new ArrayList<>();
         GroupByElement groupBy = plainSelect.getGroupBy();
         if (groupBy != null) {
-            List<Expression> groupByExpressions = groupBy.getGroupByExpressions();
+            ExpressionList<?> groupByExpressions = groupBy.getGroupByExpressions();
             if (groupByExpressions != null) {
-                for (Expression expr : groupByExpressions) {
+                for (Object expr : groupByExpressions) {
                     if (expr instanceof Column) {
-                        groupByAttributes.add(((Column) expr).getColumnName());
+                        groupByAttributes.add(((Column) expr));
                     }
                 }
             }
