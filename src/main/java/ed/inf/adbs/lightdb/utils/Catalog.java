@@ -12,6 +12,7 @@ public class Catalog {
 
     private static Catalog instance = null;
     private final Map<String, List<String>> tableSchemas;
+
     private final Map<String, String> tableAliases;
     private final Map<String, Map<String, String>> columnAliases;
     private final Map<String, List<String>> accumulatedSchema;
@@ -64,6 +65,16 @@ public class Catalog {
         return name;
     }
 
+    public void resetTableSchemas(List<String> newSchema) {
+        tableSchemas.clear();
+        for (String schema : newSchema) {
+            String[] parts = schema.split(" ");
+            String tableName = parts[0];
+            List<String> columns = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length));
+            tableSchemas.put(tableName, columns);
+        }
+    }
+
     public List<String> getTableSchema(String tableName) {
         // Resolve alias before getting the schema
         String actualTableName = resolveTableName(tableName.split(" ")[0].trim());
@@ -105,6 +116,9 @@ public class Catalog {
                 tableName = join.getRightItem().toString();
                 addTableSchema(schemas, tableName);
             }
+        }
+        if (plainSelect.getOrderByElements()!=null){
+            return this.tableSchemas.get(plainSelect.getFromItem().toString());
         }
 
         return schemas;

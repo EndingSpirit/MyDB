@@ -6,8 +6,12 @@ import ed.inf.adbs.lightdb.utils.Config;
 import ed.inf.adbs.lightdb.utils.JoinExpressionDeParser;
 import ed.inf.adbs.lightdb.utils.SQLExpressionUtils;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.Function;
+import net.sf.jsqlparser.schema.Column;
+import net.sf.jsqlparser.statement.select.GroupByElement;
 import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.statement.select.SelectItem;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,11 +68,41 @@ public class Planner {
             queryPlan = processSingleTable(tableName, where, catalog);
         }
 
+
+        List<String> groupByAttributes = new ArrayList<>();
+        GroupByElement groupBy = plainSelect.getGroupBy();
+        if (groupBy != null) {
+            List<Expression> groupByExpressions = groupBy.getGroupByExpressions();
+            if (groupByExpressions != null) {
+                for (Expression expr : groupByExpressions) {
+                    if (expr instanceof Column) {
+                        groupByAttributes.add(((Column) expr).getColumnName());
+                    }
+                }
+            }
+        }
+        List<Expression> sumExpressions = new ArrayList<>();
+        for (SelectItem<?> item : plainSelect.getSelectItems()) {
+            Expression expr = item.getExpression();
+            // 检查表达式是否为Function类型且为SUM
+            if (expr instanceof Function) {
+                Function func = (Function) expr;
+                if ("SUM".equalsIgnoreCase(func.getName())) {
+                    sumExpressions.add(func);
+                }
+            }
+        }
+
+        if (!sumExpressions.isEmpty() || !groupByAttributes.isEmpty()) {
+            queryPlan = new SumOperator(queryPlan, sumExpressions, groupByAttributes, plainSelect);
+        }
+
         // Apply projection if needed
         ProjectionOperator projectionOperator = new ProjectionOperator(queryPlan, plainSelect);
         SortOperator sortOperator = new SortOperator(plainSelect, projectionOperator);
 
         queryPlan = new DuplicateEliminationOperator(plainSelect, sortOperator);
+
         return queryPlan;
     }
 
