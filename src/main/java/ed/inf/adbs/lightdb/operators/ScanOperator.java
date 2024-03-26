@@ -7,6 +7,8 @@ import ed.inf.adbs.lightdb.utils.Config;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,11 @@ public class ScanOperator extends Operator {
     public ScanOperator(String tableName) throws IOException {
         this.tableName = Catalog.getInstance().resolveTableName(tableName.split(" ")[0]);
         String databaseDir = Config.getInstance().getDbPath();
-        this.reader = new BufferedReader(new FileReader(databaseDir + "/data/" + this.tableName + ".csv"));
+
+        // Use the paths.get method to build Paths securely
+        Path path = Paths.get(databaseDir, "data", this.tableName + ".csv");
+        this.reader = new BufferedReader(new FileReader(path.toFile()));
+
     }
 
     /**

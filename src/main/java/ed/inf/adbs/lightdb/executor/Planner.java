@@ -52,6 +52,7 @@ public class Planner {
             // Create a JoinExpressionDeParser to extract join conditions
             JoinExpressionDeParser joinExpressionDeParser = new JoinExpressionDeParser();
             if (where != null) {
+                // Extract join conditions from the where clause
                 where.accept(joinExpressionDeParser);
             }
             List<String> joinedTableNames = new ArrayList<>();
