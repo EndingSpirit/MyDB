@@ -363,23 +363,11 @@ public class LightDBTest {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 	public boolean compare(String num) throws Exception {
-		String databaseDir = "db";
-		String inputFile = "input/query"+num+".sql";
+		String databaseDir = "samples/db";
+		String inputFile = "samples/input/query"+num+".sql";
 		String outputFile = "output/query"+num+".csv";
-		String expectedOutputFile = "expected_output/query"+num+".csv";
+		String expectedOutputFile = "samples/expected_output/query"+num+".csv";
 
 		String[] args = new String[]{databaseDir, inputFile, outputFile};
 

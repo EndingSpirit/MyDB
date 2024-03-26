@@ -1,0 +1,1 @@
+SELECT S.B, S.C FROM Sailors S, Reserves R WHERE S.A = R.G GROUP BY S.B, S.C ORDER BY S.C, S.B;

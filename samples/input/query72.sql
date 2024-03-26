@@ -1,0 +1,1 @@
+SELECT R.H, SUM(R.G * R.G) FROM Reserves R GROUP BY R.H;
