@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * JoinExpressionDeParser is used to separate the join conditions and selection conditions
+ * Use List<Expression> to store the join conditions and selection conditions
  */
 public class JoinExpressionDeParser extends ExpressionDeParser {
 

@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ProjectionOperator is used to project the columns in the select clause
+ * ProjectOperator is used to project the columns in the select clause
  */
-public class ProjectionOperator extends Operator {
+public class ProjectOperator extends Operator {
 
     private final List<SelectItem<?>> selectItems;
     private final Operator child;
@@ -23,18 +23,18 @@ public class ProjectionOperator extends Operator {
     private final List<String> schema;
 
     /**
-     * Constructor for ProjectionOperator
+     * Constructor for ProjectOperator
      * @param child The child operator
      * @param plainSelect The select clause
      */
-    public ProjectionOperator(Operator child, PlainSelect plainSelect) {
+    public ProjectOperator(Operator child, PlainSelect plainSelect) {
         this.child = child;
         List<SelectItem<?>> selectItems = plainSelect.getSelectItems();
         if (child instanceof SumOperator) {
-            // If the ProjectionOperator's child is a SumOperator, we need to pass the schema of the SumOperator to the ProjectionOperator
+            // If the ProjectOperator's child is a SumOperator, we need to pass the schema of the SumOperator to the ProjectOperator
             this.schema = ((SumOperator) child).groupBySchema;
         } else {
-            // If the ProjectionOperator's child is not SumOperator, then we need to get the schema from the Catalog
+            // If the ProjectOperator's child is not SumOperator, then we need to get the schema from the Catalog
             this.schema = Catalog.getInstance().getSchemasFromPlain(plainSelect);
         }
 

@@ -78,7 +78,7 @@ public class Planner {
         List<Column> groupByAttributes = new ArrayList<>();
         GroupByElement groupBy = plainSelect.getGroupBy();
         if (groupBy != null) {
-            ExpressionList<?> groupByExpressions = groupBy.getGroupByExpressions();
+            ExpressionList<?> groupByExpressions = groupBy.getGroupByExpressionList();
             if (groupByExpressions != null) {
                 for (Object expr : groupByExpressions) {
                     if (expr instanceof Column) {
@@ -104,8 +104,9 @@ public class Planner {
             queryPlan = new SumOperator(queryPlan, sumExpressions, groupByAttributes, plainSelect);
         }
 
+
         // Apply projection
-        queryPlan = new ProjectionOperator(queryPlan, plainSelect);
+        queryPlan = new ProjectOperator(queryPlan, plainSelect);
 
         // Apply ORDER BY
         queryPlan = new SortOperator(plainSelect, queryPlan);
@@ -148,23 +149,23 @@ public class Planner {
             for (Expression expression : joinExpressionDeParser.getSelectionConditions()) {
                 List<String> l = SQLExpressionUtils.extractTableNamesFromExpression(expression);
 
-                // 对于没有表名的表达式，如1=1，应用于第一个表
+                // An expression without a table name, such as 1=1, is applied to the first table
                 if (l.isEmpty() && i == 0) {
                     selectionConditions.add(expression);
                     continue;
                 }
-                // 对于包含表名的表达式
                 for (String tableNameOrAlias : l) {
-                    // 确保表达式仅应用于与之相关的表
+                    // Ensure that the expression applies only to the table it is associated with
                     if ((Config.getInstance().isUseAliases() && tableNameOrAlias.equals(table.split(" ")[1])) ||
                             (!Config.getInstance().isUseAliases() && table.equals(tableNameOrAlias))) {
                         selectionConditions.add(expression);
-                        break; // 假设一个表达式不会同时针对多个表，一旦匹配成功，即可退出循环
+                        break;
                     }
                 }
             }
 
             Expression combinedCondition = SQLExpressionUtils.combineConditionsWithAnd(selectionConditions);
+            // Create the SelectOperator, it should be push down because it is more efficient.
             SelectOperator selectOperator = new SelectOperator(new ScanOperator(resolvedTableName), combinedCondition, schema);
 
             if (i == 0) {
@@ -182,6 +183,8 @@ public class Planner {
                 accumulatedSchema.addAll(rightSchema);
 
                 Expression joinExpression = SQLExpressionUtils.mergeJoinConditionsForTables(joinedTableNames.subList(0, i), table, joinedTableNames, joinExpressionDeParser.getJoinConditions());
+
+                // We have selectOperator to filter some data, then we can create a JoinOperator to join the data more efficiently
                 previousOperator = new JoinOperator(previousOperator, selectOperator, joinExpression, new ArrayList<>(accumulatedSchema));
                 catalog.setAccumulatedSchema(table, new ArrayList<>(accumulatedSchema));
             }
